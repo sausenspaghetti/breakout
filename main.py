@@ -23,8 +23,6 @@ class Unit:
 
     
 class Player(Unit):
-    # def __init__(self, position: Vector2, sizes: Vector2):
-    #     super().__init__(position, sizes)
     pass
      
 
@@ -43,34 +41,21 @@ class Ball(Unit):
         edge = self.position - self.sizes / 2
         return Rect(*edge, *self.sizes)
 
-    
-
-
 
 class State:
     def __init__(self, game: "Game"):
         self.screen = game.screen
         self.size = game.screen.get_size()
-        self.width = self.size[0]
-        self.height = self.size[1]
+        self.width, self.height = self.size
 
         # player
         p_width, p_height = self.width // 6, self.height // 40
         self.playerUnit = Player(
             sizes=Vector2(p_width, p_height),
-            position=Vector2(self.width / 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
+            position=Vector2(self.width // 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
         )
 
-        # ball
-        self.ball_pos = Vector2(self.width // 2, self.height // 2)
-        self.ball_radius = 10
-        self.ball_rect = Rect(0, 0, 0, 0)
-        self.ball_rect.center = self.ball_pos
-        self.ball_rect.width = self.ball_rect.height = self.ball_radius * 2
-        self.ball_speed = 5
-        self.ball_direction = Vector2(1, -1).normalize()
-
-
+        # # ball
         self.ballUnit = Ball(
             position=Vector2(self.width / 2, self.height / 2),
             radius=10,
@@ -86,34 +71,23 @@ class State:
         if self.is_inside(new_player):
             self.playerUnit.set_rect(new_player)
 
-
-
         # ball
-        # newBallRect = Rect(self.ball_rect)
+        # set new ball's position
         ball = self.ballUnit
         newBallRect = ball.get_rect()
         newBallPos = ball.position + ball.direction * ball.speed
-        # newBallPos.x, newBallPos.y = int(newBallPos.x), int(newBallPos.y)  
         newBallRect.center = newBallPos
 
-        if self.is_collided(newBallRect, self.playerUnit.get_rect()):
-            print('sus')
-
+        # check collision
         coeff = Vector2(1, 1)
         coeff = coeff.elementwise() * self.board_direction(newBallRect)
         coeff = coeff.elementwise() * self.collision_direction(newBallRect, self.playerUnit.get_rect())
-        # print(coeff, self.ball_direction)
         if coeff != Vector2(1, 1):
-            # self.ball_direction = (self.ball_direction.elementwise() * coeff).normalize()
             self.ballUnit.direction = (ball.direction.elementwise() * coeff).normalize()
         else:
-            # self.ball_pos = newBallPos
-            # self.ball_rect = newBallRect
             self.ballUnit.position = newBallPos
 
         
-
-
     def is_inside(self, obj: Rect):
         return all([
             obj.top >= 0,
@@ -214,7 +188,7 @@ class Game:
             self.processInput()
             self.update()
             self.render()
-            dt = self.clock.tick(FPS)
+            self.dt = self.clock.tick(FPS)
         
 
 
