@@ -29,7 +29,7 @@ class State:
         )
 
         # paddles 
-        self.paddles = []
+        self.paddles: list[Rect] = []
 
     
     def update(self, playerPosX: int):
@@ -56,8 +56,34 @@ class State:
             self.ballUnit.position = newBallPos
 
 
-    def update_new(self, playerPosX: int):
+    def update_player(self, playerPosX: int):
+        new_player = self.playerUnit.get_rect()
+        new_player.centerx = playerPosX
+        if not self.is_inside(new_player):
+            return 
+        
+        # Что делать с ball??
+        self.playerUnit.set_rect(new_player)
+
+
+
+
+    def update_ball(self, dt: float = 1.0):
+        ball = self.ballUnit
+        newBallRect = ball.get_rect()
+        newBallPos = ball.position + ball.direction * ball.speed * dt
+        newBallRect.center = newBallPos
+
+        for ob in self.paddles:
+            pass
+
+
+
+    def update_bricks(self):
         pass
+
+        
+        
         
     def is_inside(self, obj: Rect):
         return all([

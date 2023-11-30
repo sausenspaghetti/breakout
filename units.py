@@ -1,8 +1,17 @@
 from pygame import Vector2, Rect
 
+class Item:
+    def __init__(self):
+        self.status = 'alive'
 
-class Unit:
+    def kill(self):
+        self.status = 'delete'
+
+
+
+class Unit(Item):
     def __init__(self, position: Vector2, sizes: Vector2):
+        super().__init__()
         self.position = position
         self.sizes = sizes
 
