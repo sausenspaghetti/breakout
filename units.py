@@ -1,55 +1,88 @@
-from pygame import Vector2, Rect
+from pygame import Rect, Vector2
+# import pygame
+
 
 class Item:
     def __init__(self):
         self.status = 'alive'
 
     def kill(self):
-        self.status = 'delete'
+        if self.status != 'immortal':
+            self.status = 'delete'
+
+    def set_immortal(self):
+        self.status = 'immortal'
 
 
 
-class Unit(Item):
-    def __init__(self, position: Vector2, sizes: Vector2):
-        super().__init__()
-        self.position = position
-        self.sizes = sizes
+class Unit(Rect, Item):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)   # Rect.__init__
+        super(Rect, self).__init__()        # Item.__init__
 
-    def get_rect(self):
-        return Rect(*self.position, *self.sizes)
+
+    # def render(self, screen):
+    #     raise NotImplementedError()
     
-
-    def set_rect(self, new_rect: Rect):
-        self.position = Vector2(new_rect.left, new_rect.top)
-        self.sizes = Vector2(new_rect.width, new_rect.height)
-    
-
-    
-class Player(Unit):
-    pass
-
-
-class Paddle(Unit):
-    def __init__(self, position: Vector2, sizes: Vector2, scores=1):
-        super().__init__(position, sizes)
-        self.scores = scores
 
 
 
 class Ball(Unit):
-    def __init__(self, position: Vector2, radius: int, speed: int, direction: Vector2):
-        """position is the center of the circle."""
-        sizes = Vector2(2 * radius, 2 * radius)
-        self.direction = direction.normalize()
-        self.speed = speed
-        self.radius = radius
-        super().__init__(position, sizes)
+    def __init__(self, position: Vector2, radius: int, velocity: Vector2):
+        self.velocity = velocity
+        super().__init__(position, (int(radius), int(radius)))
 
 
-    def get_rect(self):
-        edge = self.position - self.sizes / 2
-        return Rect(*edge, *self.sizes)
+    # def render(self, screen):
+    #     pygame.draw.circle(screen, 'green', self.center, self.radius)
+        
+
+    @property
+    def radius(self):
+        return (self.width + self.height) // 4
     
-    def set_rect(self, new_rect):
-        self.position = new_rect.center
-        self.sizes = Vector2(new_rect.width, new_rect.height)
+
+    @radius.setter
+    def set_radius(self, value):
+        self.width = self.height = 2 * int(value)
+
+
+
+
+class Paddle(Unit):
+    def __init__(self, *args, **kwargs):
+        score = 1
+        if 'score' in kwargs:
+            score = kwargs['score']
+            kwargs.pop('score')
+        self._score = score
+        super().__init__(*args, **kwargs)
+
+
+    # def render(self, screen):
+    #     pygame.draw.rect(screen, 'white', self)
+
+    @property
+    def score(self):
+        return self._score
+
+    @score.setter
+    def score(self, value):
+        if self.status == 'immortal':
+            return
+        self._score =  max(0, int(value))
+        if self._score == 0:
+            self.kill()
+
+    def set_immortal(self):
+        super().set_immortal()
+        self._score = -1
+
+
+
+class Player(Unit):
+    def __init__(self, position: Vector2, sizes: Vector2):
+        super().__init__(position.x, position.y, sizes.x, sizes.y)
+    # def render(self, screen):
+    #     pygame.draw.rect(screen, 'white', self)
+
