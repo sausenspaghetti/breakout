@@ -1,8 +1,9 @@
-from pygame import Vector2, Rect
-
+import math
 from typing import TYPE_CHECKING
 
-from utils import get_normal
+from pygame import Vector2, Rect
+
+from utils import get_normal, get_intersect_area
 
 if TYPE_CHECKING:
     from units import Unit, Player, Ball
@@ -40,7 +41,6 @@ class CommandPlayerMove(Command):
     def run(self):
         # old_pos = self.player.center
 
-
         # set left and right borders
         indent = self.player.width // 2
         left_border = indent
@@ -77,38 +77,42 @@ class CommandBallMove(Command):
         # 
         self.ball.center += step
         
+        ball = self.ball
         player = self.gameState.playerUnit
 
-        norm_set = set()
-        for ob in [*self.gameState.paddles, player]:
-            if ob.colliderect(self.ball):
-                norm = get_normal(self.ball, ob).normalize()
-                self.ball.velocity -= (2 * norm.elementwise() * self.ball.velocity) * norm
-                self.ball.center = old_ball_center
+        if player.colliderect(ball):
+            norm = get_normal(ball, player).normalize()
+            if norm.y:
+                ball.velocity = self.get_pb_velocity(player, ball)
+            else:
+                ball.velocity -= (2 * norm.elementwise() * ball.velocity) * norm
+
+            old_ball_center = self.ball.center
+            return 
+
+
+
+
+        for ob in self.gameState.paddles:
+            if ob.colliderect(ball):
+                norm = get_normal(ball, ob).normalize()
+                ball.velocity -= (2 * norm.elementwise() * ball.velocity) * norm
+                ball.center = old_ball_center
                 if not ob is player:
                     ob.score -= 1
                 break
-                # norm_set.add(norm)
-        
-
-        # if not norm_set:
-        #     return
-
-
-        # self.ball.center = old_ball_center
-
-        # final_norm: Vector2 = self._resolve_norm(step, norm_set)
-        # self.ball.velocity -= 2 * final_norm.elementwise() * self.ball.velocity
-
 
 
     @staticmethod
-    def _resolve_norm(step, norm_set) ->Vector2:
-        all_x = set(map(lambda norm: norm.x, norm_set))
-        all_y = set(map(lambda norm: norm.y, norm_set))
-        all_x.discard(0)
-        all_y.discard(0)
-        return Vector2(0, 0)
+    def get_pb_velocity(player: "Player", ball: "Ball"):
+        diff = Vector2(ball.center) - Vector2(player.center)
+        alpha = math.pi / 3 * (2 * diff.x) / (player.width + ball.width)
+        speed = (ball.velocity* ball.velocity) ** 0.5
+        new_velocity = Vector2(math.sin(alpha), -math.cos(alpha)) * speed
+        new_velocity.x, new_velocity.y = int(new_velocity.x), int(new_velocity.y)
+
+        print(alpha, diff, new_velocity)
+        return new_velocity
 
 
 
