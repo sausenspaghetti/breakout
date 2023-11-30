@@ -76,15 +76,20 @@ class CommandBallMove(Command):
 
         # 
         self.ball.center += step
+        
+        player = self.gameState.playerUnit
 
         norm_set = set()
-        for ob in self.gameState.paddles:
+        for ob in [*self.gameState.paddles, player]:
             if ob.colliderect(self.ball):
                 norm = get_normal(self.ball, ob).normalize()
                 self.ball.velocity -= (2 * norm.elementwise() * self.ball.velocity) * norm
                 self.ball.center = old_ball_center
+                if not ob is player:
+                    ob.score -= 1
                 break
                 # norm_set.add(norm)
+        
 
         # if not norm_set:
         #     return

@@ -81,7 +81,8 @@ class Paddle(Unit):
 
 
 class Player(Unit):
-    pass
+    def __init__(self, position: Vector2, sizes: Vector2):
+        super().__init__(position.x, position.y, sizes.x, sizes.y)
     # def render(self, screen):
     #     pygame.draw.rect(screen, 'white', self)
 

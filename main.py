@@ -3,7 +3,7 @@ from pygame import Vector2, Rect
 
 
 from state import State
-from commands import CommandBallMove
+from commands import CommandBallMove, CommandDestroy, CommandPlayerMove
 
 import config
 
@@ -25,33 +25,34 @@ class Game:
         self.mousePos = Vector2(0, 0)
 
         self.commands = []
+        self.pause = False
         self.dt = self.clock.tick(config.FPS) / 1000
 
 
     def processInput(self):
-        self.mode_move = True
-        self.mousePos = Vector2(pygame.mouse.get_pos())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
-                if event.key == pygame.K_m:
-                    self.mode_move = not self.mode_move
-                if event.key == pygame.K_s:
-                    pass
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if self.mode_move:
-                    vel = -(self.state.ballUnit.center - self.mousePos).normalize() * 50
-                    vel.x, vel.y = int(vel.x), int(vel.y)
-                    self.state.ballUnit.velocity = vel
-                else:
-                    self.state.ballUnit.center = self.mousePos
+                    self.pause = not self.pause
 
-        self.commands.append(
-            CommandBallMove(self.state, self.state.ballUnit, self.dt)
-        )
+        if not self.pause:
+            self.mode_move = True
+            mousePos = Vector2(pygame.mouse.get_pos())
+            mousePos.x, mousePos.y = int(mousePos.x), int(mousePos.y)
+            if mousePos != self.mousePos:
+                self.mousePos = mousePos
+                self.commands.append(
+                    CommandPlayerMove(self.state, self.state.playerUnit, self.mousePos)
+                )
+
+            self.commands.append(
+                CommandBallMove(self.state, self.state.ballUnit, self.dt)
+            )
+            self.commands.append(
+                CommandDestroy(self.state.paddles)
+            )
 
     
     def update(self):
@@ -65,11 +66,15 @@ class Game:
     def render(self):
         self.screen.fill('black')
         for paddle in self.state.paddles:
-            pygame.draw.rect(self.screen, 'medium spring green', paddle)
+            color = config.PADDLE_COLORS.get(paddle.score)
+            if not color:
+                color = 'yellow'
+            pygame.draw.rect(self.screen, color, paddle)
         
         ball = self.state.ballUnit
-        pygame.draw.circle(self.screen, 'red', ball.center, ball.radius)
-
+        player = self.state.playerUnit
+        pygame.draw.circle(self.screen, 'white', ball.center, ball.radius)
+        pygame.draw.rect(self.screen, 'white', player)
 
         # pygame.draw.rect(self.screen, 'white', self.state.playerUnit.get_rect())
         # pygame.draw.circle(self.screen, 'lime', self.state.ballUnit.position, self.state.ballUnit.radius)

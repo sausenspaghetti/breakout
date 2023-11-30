@@ -18,38 +18,38 @@ class State:
         self.size = game.screen.get_size()
         self.width, self.height = self.size
 
-        # # player
-        # p_width, p_height = self.width // 6, self.height // 40
-        # self.playerUnit = Player(
-        #     sizes=Vector2(p_width, p_height),
-        #     position=Vector2(self.width // 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
-        # )
+        # player
+        p_width, p_height = self.width // 6, self.height // 40
+        self.playerUnit = Player(
+            sizes=Vector2(p_width, p_height),
+            position=Vector2(self.width // 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
+        )
 
         # ball
+        velocity = Vector2(0.5, -1.5).normalize() * config.SPEED
+        velocity.x, velocity.y =  int(velocity.x), int(velocity.y)
         self.ballUnit = Ball(
             position=Vector2(self.width / 2, self.height / 2),
             radius=10,
-            velocity=Vector2(50, 50)
+            velocity=velocity
         )
 
         # paddles 
-        upperBorder = Paddle(0, 0, self.width, 20)
+        upperBorder = Paddle(0, 0, self.width, 100)
         upperBorder.bottomleft = Vector2(0, 0)
         upperBorder.set_immortal()
 
-        bottomBorder = Paddle(0, 0, self.width, 20)
+        bottomBorder = Paddle(0, 0, self.width, 100)
         bottomBorder.topleft = Vector2(0, self.height)
         bottomBorder.set_immortal()
 
-        leftBorder = Paddle(0, 0, 20, self.height)
+        leftBorder = Paddle(0, 0, 100, self.height)
         leftBorder.topright = Vector2(0, 0)
         leftBorder.set_immortal()
 
 
-        rightBorder = Paddle(0, 0, 20, self.height)
+        rightBorder = Paddle(0, 0, 100, self.height)
         rightBorder.topleft = Vector2(self.width, 0)
-        print(rightBorder)  # <rect(0, 475, 20, 360)>
-        # Rect()
         rightBorder.set_immortal()
 
         # read level <-- ??
@@ -64,11 +64,12 @@ class State:
             for y in range(config.N_Y):
                 if field[x][y]:
                     new_block = Paddle(
-                        x * config.STEP_X, 
-                        y * config.STEP_Y, 
-                        config.STEP_X, 
-                        config.STEP_Y)
-                    new_block.set_immortal()
+                        x * config.STEP_X + 5, 
+                        y * config.STEP_Y + 5, 
+                        config.STEP_X - 10, 
+                        config.STEP_Y - 10,
+                        score=4)
+                    # new_block.set_immortal()
                     self.paddles.append(new_block)
 
 
@@ -77,8 +78,8 @@ class State:
     def generate_random_field():
         field = [[0,] * config.N_Y for x in range(config.N_X)]
         for x in range(config.N_X):
-            for y in range(config.N_Y):
-                field[x][y] = 1 if random.random() > 0.8 else 0
+            for y in range(config.N_Y // 2):
+                field[x][y] = 1 if random.random() > 0.5 else 0
 
         
         return field
