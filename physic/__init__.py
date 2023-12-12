@@ -1,2 +1,2 @@
 
-from physic_rect import PhysicRect, DynamicRect
+from physic.physic_rect import PhysicRect, DynamicRect, CollisionResponce

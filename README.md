@@ -20,3 +20,23 @@ Current gameplay:
 ### Future imrpovements
 1. better graphic
 2. better collision resolution
+3. better documentation
+
+
+
+### Examples
+
+1. all examples can be found in physic.examples/  and have ```main``` 
+function to start.
+
+2. For instance, add this code in file in the working directory (same level as main.py):
+
+
+```
+# your_working_directory/test.py
+from physic.examples.test_dynamic_rect_multiple import main
+
+main()
+```
+
+
