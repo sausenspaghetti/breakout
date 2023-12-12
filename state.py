@@ -39,7 +39,7 @@ class State:
         upperBorder = Paddle(-100, -100, self.width + 200, 100)
         upperBorder.set_immortal()
 
-        bottomBorder = Paddle(-100, self.height, self.width, 100)
+        bottomBorder = Paddle(-100, self.height, self.width + 200, 100)
         bottomBorder.set_immortal()
 
         leftBorder = Paddle(-100, 0, 100, self.height)

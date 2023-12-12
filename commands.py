@@ -8,6 +8,7 @@ from utils import get_normal, get_intersect_area
 if TYPE_CHECKING:
     from units import Unit, Player, Ball
     from state import State
+    from physic.rect import PhysicRect, DynamicRect
 
 
 
@@ -66,7 +67,7 @@ class CommandBallMove(Command):
         self.dt = dt
 
     
-    def run(self):
+    def _run(self):
         # save old value
         old_ball_center = self.ball.center
 
@@ -113,6 +114,69 @@ class CommandBallMove(Command):
 
         print(alpha, diff, new_velocity)
         return new_velocity
+    
+
+
+
+    def resolve_collision(self, dynamic: "DynamicRect", static_rect: "PhysicRect", dt: float):
+        resp = dynamic.collide_dynamic_rect(static_rect, dt)
+        if not resp.is_hit:
+            return
+        
+        # print(resp, dynamic.vel)
+        dynamic.vel -= 2 * (resp.norm * dynamic.vel) * resp.norm
+    
+    def resolve_collision_player(self, dynamic: "DynamicRect", static_rect: "PhysicRect", dt: float):
+        resp = dynamic.collide_dynamic_rect(static_rect, dt)
+        if not resp.is_hit:
+            return
+        
+        resp.contact_points
+
+
+    def run(self):
+        # 1. выбираем кандидатов для столкновения
+        candidates = self.choose_candidates()
+        
+        # 2. Ищем тех, с кем столкнемся через self.dt
+        collided = []
+        for num, ob in enumerate(candidates):
+            result = self.ball.collide_dynamic_rect(ob, self.dt)
+            if result.is_hit:
+                collided.append((num, result))
+        
+        if not collided:
+            self.ball.center += self.ball.vel * self.dt
+            # print(self.ball.center)
+            return
+        
+        # 3. сортируем по порядку столкновения и разрешаем коллизии
+        collided.sort(key=lambda x: x[1].t_hit_near)
+        num_first = collided[0][0]
+        candidates[num_first].kill()
+
+        for ob in collided:
+            self.resolve_collision(self.ball, candidates[ob[0]], self.dt)
+
+        
+
+    
+    def choose_candidates(self):
+        step = self.ball.vel * self.dt
+        step.x, step.y = abs(step.x), abs(step.y)
+        extended = self.ball.copy()
+        extended.scale_by_ip(2 * step)
+
+        candidates = [ 
+            ob for ob in 
+            self.gameState.paddles 
+            if extended.colliderect(ob)
+        ]
+        if extended.colliderect(self.gameState.playerUnit):
+            candidates.append(self.gameState.playerUnit)
+        
+        return candidates
+
 
 
 

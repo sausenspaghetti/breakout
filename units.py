@@ -19,18 +19,17 @@ class Item:
 
 class Unit(Item, DynamicRect):
     _classname = 'Unit'
-    def __init__(self, left: float, top: float, width: float, height: float):
+    def __init__(self, left: float, top: float, width: float, height: float, vel: Vector2= None):
         super().__init__()        # Item.__init__
-        super(Item, self).__init__(float(left), float(top), float(width), float(height))   # RhysicRect.__init__
+        super(Item, self).__init__(float(left), float(top), float(width), float(height), vel)   # RhysicRect.__init__
 
 
 
 class Ball(Unit):
     _classname = 'Ball'
     def __init__(self, position: Vector2, radius: int, velocity: Vector2):
-        self.velocity = Vector2(velocity)
         position =Vector2(position)
-        super().__init__(float(position.x), float(position.y), int(radius), int(radius))
+        super().__init__(float(position.x), float(position.y), int(radius), int(radius), Vector2(velocity))
 
 
     @property
