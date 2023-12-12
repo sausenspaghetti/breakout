@@ -65,6 +65,7 @@ class CommandBallMove(Command):
         self.gameState = gameState
         self.ball = ball
         self.dt = dt
+        self.player = self.gameState.playerUnit
 
     
     def _run(self):
@@ -118,20 +119,29 @@ class CommandBallMove(Command):
 
 
 
-    def resolve_collision(self, dynamic: "DynamicRect", static_rect: "PhysicRect", dt: float):
-        resp = dynamic.collide_dynamic_rect(static_rect, dt)
+    def resolve_collision(self, ball: "DynamicRect", static_rect: "PhysicRect", dt: float):
+        resp = ball.collide_dynamic_rect(static_rect, dt)
         if not resp.is_hit:
             return
         
         # print(resp, dynamic.vel)
-        dynamic.vel -= 2 * (resp.norm * dynamic.vel) * resp.norm
+        ball.vel -= 2 * (resp.norm * ball.vel) * resp.norm
     
-    def resolve_collision_player(self, dynamic: "DynamicRect", static_rect: "PhysicRect", dt: float):
-        resp = dynamic.collide_dynamic_rect(static_rect, dt)
+
+    def resolve_collision_player(self, ball: "DynamicRect", player: "DynamicRect", dt: float):
+        resp = ball.collide_dynamic_rect(player, dt)
         if not resp.is_hit:
             return
         
-        resp.contact_points
+        nearest_point = resp.contact_points[0]
+        coeff = 2 * (nearest_point.x - resp.obstacle.left) / resp.obstacle.width - 1
+
+        alpha = math.pi / 3 * coeff
+        speed = (ball.vel * ball.vel) ** 0.5
+        new_velocity = Vector2(speed * math.sin(alpha), - speed * math.cos(alpha))
+        ball.vel = new_velocity
+
+
 
 
     def run(self):
@@ -147,7 +157,6 @@ class CommandBallMove(Command):
         
         if not collided:
             self.ball.center += self.ball.vel * self.dt
-            # print(self.ball.center)
             return
         
         # 3. сортируем по порядку столкновения и разрешаем коллизии
@@ -156,6 +165,9 @@ class CommandBallMove(Command):
         candidates[num_first].kill()
 
         for ob in collided:
+            if candidates[ob[0]] is self.player:
+                self.resolve_collision_player(self.ball, self.player, self.dt)
+                continue
             self.resolve_collision(self.ball, candidates[ob[0]], self.dt)
 
         
@@ -172,8 +184,8 @@ class CommandBallMove(Command):
             self.gameState.paddles 
             if extended.colliderect(ob)
         ]
-        if extended.colliderect(self.gameState.playerUnit):
-            candidates.append(self.gameState.playerUnit)
+        if extended.colliderect(self.player):
+            candidates.append(self.player)
         
         return candidates
 
