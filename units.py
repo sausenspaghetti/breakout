@@ -1,6 +1,8 @@
 from pygame import Rect, Vector2
 # import pygame
 
+from physic.rect import DynamicRect, PhysicRect
+
 
 class Item:
     def __init__(self):
@@ -15,27 +17,20 @@ class Item:
 
 
 
-class Unit(Rect, Item):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)   # Rect.__init__
-        super(Rect, self).__init__()        # Item.__init__
-
-
-    # def render(self, screen):
-    #     raise NotImplementedError()
-    
+class Unit(Item, DynamicRect):
+    _classname = 'Unit'
+    def __init__(self, left: float, top: float, width: float, height: float, vel: Vector2= None):
+        super().__init__()        # Item.__init__
+        super(Item, self).__init__(float(left), float(top), float(width), float(height), vel)   # RhysicRect.__init__
 
 
 
 class Ball(Unit):
+    _classname = 'Ball'
     def __init__(self, position: Vector2, radius: int, velocity: Vector2):
-        self.velocity = velocity
-        super().__init__(position, (int(radius), int(radius)))
+        position =Vector2(position)
+        super().__init__(float(position.x), float(position.y), int(radius), int(radius), Vector2(velocity))
 
-
-    # def render(self, screen):
-    #     pygame.draw.circle(screen, 'green', self.center, self.radius)
-        
 
     @property
     def radius(self):
@@ -45,22 +40,16 @@ class Ball(Unit):
     @radius.setter
     def set_radius(self, value):
         self.width = self.height = 2 * int(value)
-
+    
 
 
 
 class Paddle(Unit):
-    def __init__(self, *args, **kwargs):
-        score = 1
-        if 'score' in kwargs:
-            score = kwargs['score']
-            kwargs.pop('score')
+    _classname = 'Paddle'
+    def __init__(self, left: float, top: float, width: float, height: float, score: int=1):
+        super().__init__(left, top, width, height)
         self._score = score
-        super().__init__(*args, **kwargs)
 
-
-    # def render(self, screen):
-    #     pygame.draw.rect(screen, 'white', self)
 
     @property
     def score(self):
@@ -81,8 +70,20 @@ class Paddle(Unit):
 
 
 class Player(Unit):
-    def __init__(self, position: Vector2, sizes: Vector2):
-        super().__init__(position.x, position.y, sizes.x, sizes.y)
-    # def render(self, screen):
-    #     pygame.draw.rect(screen, 'white', self)
+    _classname = 'Player'
+    def __init__(self, left: float, top: float, width: float, height: float):
+        super().__init__(left, top, width, height)
+        self.set_immortal()
 
+
+
+if __name__ == '__main__':
+    # print(Player.mro())
+    u = Unit(1, 1, 1, 1)
+    pp = Player(1, 2, 3, 4)
+    p = Paddle(1, 2, 3, 4)
+    b = Ball((1, 2), 5, (1,1))
+    print(u)
+    print(p)
+    print(pp)
+    print(b)
