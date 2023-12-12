@@ -14,6 +14,10 @@ sign = lambda x: 1 if x >= 0 else -1
 class PhysicRect(FloatRect):
     _classname = 'PhysicRect'
 
+    def copy(self):
+        return PhysicRect(self.left, self.top, self.width, self.height)
+
+
     def colliderect(self, other_rect: "PhysicRect") -> bool:
         return all([
             self.left <= other_rect.left <= self.right or \
@@ -90,6 +94,8 @@ class PhysicRect(FloatRect):
         else:
             contact_point_far = start + (end - start) * t_hit_far
 
-        result.contact_points = [contact_point_near, contact_point_far]        
+        result.contact_points = [contact_point_near, contact_point_far]
+        result.obstacle = self
+
         return result
 

@@ -98,7 +98,7 @@ class FloatRect:
         return Rect(self.left, self.top, self.width, self.height)
     
     def copy(self):
-        return type(self)(self.left, self.top, self.width, self.height)
+        return FloatRect(self.left, self.top, self.width, self.height)
     
     def __str__(self):
         return f'{self._classname}<{self.left}, {self.top}, {self.width}, {self.height}>'

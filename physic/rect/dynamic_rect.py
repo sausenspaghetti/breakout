@@ -12,7 +12,6 @@ sign = lambda x: 1 if x >= 0 else -1
 
 
 
-
 class DynamicRect(PhysicRect):
     _classname = 'DynamicRect'
     def __init__(self, left: float, top: float, width: float, height: float, vel: Vector2 = None):
@@ -35,4 +34,12 @@ class DynamicRect(PhysicRect):
         result = expanded_rect.clipline(self.center, end_p)
 
         return result
+    
+    
+    def copy(self):
+        return DynamicRect(self.left, self.top, self.width, self.height, self.vel)
+    
+    def __str__(self):
+        return f'{self._classname}<{self.left}, {self.top}, {self.width}, {self.height}, velocity={self.vel}>'
+
     

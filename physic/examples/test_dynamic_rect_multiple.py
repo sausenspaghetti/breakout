@@ -99,8 +99,8 @@ def main():
         else:
             # resolve all
             collided.sort(key=lambda x: x[1].t_hit_near)
-            for ob in obstacles:
-                resolve_collision(player, ob, dt)
+            for ob in collided:
+                resolve_collision(player, candidates[ob[0]], dt)
 
 
         screen.fill('black')
