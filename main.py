@@ -16,7 +16,7 @@ class Game:
         pygame.init()
 
         pygame.display.set_caption('best game ever')
-        self.screen = pygame.display.set_mode((config.HEIGHT, config.WIDTH))
+        self.screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
 
         self.state = State(self)
 
@@ -69,12 +69,14 @@ class Game:
             color = config.PADDLE_COLORS.get(paddle.score)
             if not color:
                 color = 'yellow'
-            pygame.draw.rect(self.screen, color, paddle)
+            pygame.draw.rect(self.screen, color, paddle.get_pyrect())
+            # pygame.draw.rect(self.screen, color, paddle)
         
         ball = self.state.ballUnit
         player = self.state.playerUnit
         pygame.draw.circle(self.screen, 'white', ball.center, ball.radius)
-        pygame.draw.rect(self.screen, 'white', player)
+        # pygame.draw.rect(self.screen, 'white', player)
+        pygame.draw.rect(self.screen, 'white', player.get_pyrect())
 
         # pygame.draw.rect(self.screen, 'white', self.state.playerUnit.get_rect())
         # pygame.draw.circle(self.screen, 'lime', self.state.ballUnit.position, self.state.ballUnit.radius)

@@ -20,9 +20,10 @@ class State:
 
         # player
         p_width, p_height = self.width // 6, self.height // 40
+        p_pos = Vector2(self.width // 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
         self.playerUnit = Player(
-            sizes=Vector2(p_width, p_height),
-            position=Vector2(self.width // 2, self.height * 0.8) - Vector2(p_width, p_height) // 2
+            p_pos.x, p_pos.y,
+            p_width, p_height
         )
 
         # ball
@@ -35,27 +36,23 @@ class State:
         )
 
         # paddles 
-        upperBorder = Paddle(0, 0, self.width, 100)
-        upperBorder.bottomleft = Vector2(0, 0)
+        upperBorder = Paddle(-100, -100, self.width + 200, 100)
         upperBorder.set_immortal()
 
-        bottomBorder = Paddle(0, 0, self.width, 100)
-        bottomBorder.topleft = Vector2(0, self.height)
+        bottomBorder = Paddle(-100, self.height, self.width, 100)
         bottomBorder.set_immortal()
 
-        leftBorder = Paddle(0, 0, 100, self.height)
-        leftBorder.topright = Vector2(0, 0)
+        leftBorder = Paddle(-100, 0, 100, self.height)
         leftBorder.set_immortal()
 
 
-        rightBorder = Paddle(0, 0, 100, self.height)
-        rightBorder.topleft = Vector2(self.width, 0)
+        rightBorder = Paddle(self.width, 0, 100, self.height)
         rightBorder.set_immortal()
 
         # read level <-- ??
 
 
-        self.paddles: list[Rect] = [
+        self.paddles: list[Paddle] = [
             upperBorder, bottomBorder, leftBorder, rightBorder
         ]
 
@@ -68,7 +65,7 @@ class State:
                         y * config.STEP_Y + 5, 
                         config.STEP_X - 10, 
                         config.STEP_Y - 10,
-                        score=4)
+                        score=1)
                     # new_block.set_immortal()
                     self.paddles.append(new_block)
 
