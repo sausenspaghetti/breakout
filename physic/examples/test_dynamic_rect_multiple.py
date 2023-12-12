@@ -3,7 +3,7 @@ import random
 import pygame
 from pygame import Vector2, Rect
 
-from ..physic_rect import DynamicRect, PhysicRect
+from ..rect import DynamicRect, PhysicRect
 
 
 def main():

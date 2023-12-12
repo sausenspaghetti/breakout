@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2
 
-from ..physic_rect import PhysicRect
+from ..rect import PhysicRect
 
 
 def main():
