@@ -12,11 +12,17 @@ N_X = WIDTH // STEP_X
 N_Y = HEIGHT // STEP_Y
 
 PADDLE_COLORS = {
-    1: '#4682B4',
-    2: 'orange',
-    3: 'medium spring green',
-    4: 'light sea green'
+    1: '#686969',  # '#89CFEF'
+    2: '#959696',
+    3: '#D0D0C5',
+    4: 'white'
 }
+
+# 'black', '#131E3A', '#022D36', 
+SCREEN_COLOR = 'black'
+GAME_SCREEN_COLOR = 'black'
+
+
 
 SPEED = 300
 

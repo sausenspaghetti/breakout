@@ -35,8 +35,8 @@ class Game:
         self.commands = []
         self.pause = False
         self.dt = self.clock.tick(config.FPS) / 1000
+        # self.status = None
         
-        self.score = 0
 
 
 
@@ -65,6 +65,13 @@ class Game:
                 CommandDestroy(self.state.paddles, self.state)
             )
 
+        # if len(self.state.paddles) == 4:
+        #     self.state.status = 'win'
+        
+
+        # if self.status in ['win', 'lose']:
+        #     pass
+
     
     def update(self):
         for cmd in self.commands:
@@ -85,6 +92,8 @@ class Game:
         pygame.draw.line(self.main_screen, 'white', top_left, bottom_left, width=3)
         pygame.draw.line(self.main_screen, 'white', top_right, bottom_right, width=3)
 
+
+
     def draw_score(self):
         text = f'Scores: {str(self.state.scores).zfill(3)}'
 
@@ -95,25 +104,51 @@ class Game:
 
         self.main_screen.blit(textSurface, textRect)
         
+    def draw_popups_text(self, text, color='lime'):
+        textSurface = self.font.render(text, False, color)
+        textRect = textSurface.get_rect()
+        textRect.centerx = self.main_screen.get_width() // 2
+        textRect.top = self.main_screen.get_height() // 2
+
+        self.main_screen.blit(textSurface, textRect)
+
+    def draw_pause(self):
+        text = 'PAUSE'
+        self.draw_popups_text(text)
+
+    def draw_game_over(self):
+        text = 'GAME OVER'
+        self.draw_popups_text(text, color='red')
+    
+    def draw_win(self):
+        text = 'YOU WIN!!!'
+        self.draw_popups_text(text, text)
 
 
     def render(self):
-        # render game screen
-        self.screen.fill('black')
-        for paddle in self.state.paddles:
-            color = config.PADDLE_COLORS.get(paddle.score) or 'yellow'
-            pygame.draw.rect(self.screen, color, paddle.get_pyrect())
-        
-        ball = self.state.ballUnit
-        player = self.state.playerUnit
-        pygame.draw.circle(self.screen, 'white', ball.center, ball.radius)
-        pygame.draw.rect(self.screen, 'white', player.get_pyrect())
+        if self.pause:
+            self.draw_pause()
+        # elif self.state.status == 'win':
+        #     self.draw_win()
+        # elif self.state.status == 'lose':
+        #     self.draw_game_over()
+        else:
+            # render game screen
+            self.screen.fill(config.GAME_SCREEN_COLOR) # 'black', '#131E3A', '#022D36', 
+            for paddle in self.state.paddles:
+                color = config.PADDLE_COLORS.get(paddle.score) or 'yellow'
+                pygame.draw.rect(self.screen, color, paddle.get_pyrect())
+            
+            ball = self.state.ballUnit
+            player = self.state.playerUnit
+            pygame.draw.circle(self.screen, 'white', ball.center, ball.radius)
+            pygame.draw.rect(self.screen, 'white', player.get_pyrect())
 
 
-        self.main_screen.fill('black')
-        self.main_screen.blit(self.screen, self.screen_pos)
-        self.draw_score()
-        self.draw_frame_borders()
+            self.main_screen.fill(config.SCREEN_COLOR)
+            self.main_screen.blit(self.screen, self.screen_pos)
+            self.draw_score()
+            self.draw_frame_borders()
 
         pygame.display.update()
 

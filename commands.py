@@ -163,6 +163,9 @@ class CommandBallMove(Command):
         candidates[num_first].kill()
 
         for ob in collided:
+            if candidates[ob[0]] is self.gameState.bottomBorder:
+                self.gameState.status = 'lose'
+                break
             if candidates[ob[0]] is self.player:
                 self.resolve_collision_player(self.ball, self.player, self.dt)
                 continue

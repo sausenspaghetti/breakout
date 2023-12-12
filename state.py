@@ -51,32 +51,40 @@ class State:
 
         # read level <-- ??
 
+        self.bottomBorder = bottomBorder
 
         self.paddles: list[Paddle] = [
-            upperBorder, bottomBorder, leftBorder, rightBorder
+            bottomBorder, upperBorder, leftBorder, rightBorder
         ]
 
-        field = self.generate_random_field()
+
+        # field = self.generate_random_field()
         for x in range(config.N_X):
-            for y in range(config.N_Y):
-                if field[x][y]:
+            for y in range(config.N_Y // 4):
                     new_block = Paddle(
                         x * config.STEP_X + 5, 
                         y * config.STEP_Y + 5, 
                         config.STEP_X - 10, 
                         config.STEP_Y - 10,
-                        score=1)
+                        score=4)
                     # new_block.set_immortal()
                     self.paddles.append(new_block)
+        
+        
+        # scores
+        self.scores = 0
+
+        # status
+        self.status = 'game' # 'lose', 'win', 'pause'
 
 
 
-    @staticmethod
-    def generate_random_field():
-        field = [[0,] * config.N_Y for x in range(config.N_X)]
-        for x in range(config.N_X):
-            for y in range(config.N_Y // 2):
-                field[x][y] = 1 if random.random() > 0.5 else 0
+    # @staticmethod
+    # def generate_random_field():
+    #     field = [[0,] * config.N_Y for x in range(config.N_X)]
+    #     for x in range(config.N_X):
+    #         for y in range(config.N_Y // 2):
+    #             field[x][y] = 1 if random.random() > 0.5 else 0
 
         
-        return field
+    #     return field
