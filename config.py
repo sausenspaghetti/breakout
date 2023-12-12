@@ -1,6 +1,7 @@
 
-FPS = 45
+FPS = 60
 
+# game screen
 WIDTH = 480
 HEIGHT = 360
 
@@ -11,10 +12,21 @@ N_X = WIDTH // STEP_X
 N_Y = HEIGHT // STEP_Y
 
 PADDLE_COLORS = {
-    1: 'light salmon',
+    1: '#4682B4',
     2: 'orange',
     3: 'medium spring green',
     4: 'light sea green'
 }
 
 SPEED = 300
+
+BORDERS = {
+    'BORDER_FRAME_BARELL': 10,
+    'BORDER_FRAME_BOTTOM': 10,
+    'BORDER_FRAME_TOP': 50
+}
+
+MAIN_HEIGHT = HEIGHT + BORDERS['BORDER_FRAME_BOTTOM'] + BORDERS['BORDER_FRAME_TOP']
+MAIN_WIDTH = WIDTH + 2 * BORDERS['BORDER_FRAME_BARELL']
+
+

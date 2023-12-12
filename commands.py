@@ -18,8 +18,9 @@ class Command:
     
 
 class CommandDestroy(Command):
-    def __init__(self, obj_list: list["Unit"]):
+    def __init__(self, obj_list: list["Unit"], state: "State"):
         self.obj_list = obj_list
+        self.state = state
 
     def run(self):
         new_obj = []
@@ -27,6 +28,7 @@ class CommandDestroy(Command):
             if ob.status in ['alive', 'immortal']:
                 new_obj.append(ob)
         
+        self.state.scores += len(self.obj_list) - len(new_obj)
         self.obj_list[:] = new_obj
 
 
@@ -54,10 +56,6 @@ class CommandPlayerMove(Command):
         new_center.x = new_x
         self.player.center = new_center
 
-        # if self.gameState.is_inside(self.player):
-
-        # TODO - balls ????
-
 
 
 class CommandBallMove(Command):
@@ -67,8 +65,8 @@ class CommandBallMove(Command):
         self.dt = dt
         self.player = self.gameState.playerUnit
 
-    
-    def _run(self):
+
+    def _deprecated_run(self):
         # save old value
         old_ball_center = self.ball.center
 
@@ -171,7 +169,6 @@ class CommandBallMove(Command):
             self.resolve_collision(self.ball, candidates[ob[0]], self.dt)
 
         
-
     
     def choose_candidates(self):
         step = self.ball.vel * self.dt
@@ -188,6 +185,17 @@ class CommandBallMove(Command):
             candidates.append(self.player)
         
         return candidates
+
+
+
+
+
+# class CommandMusic(Command):
+#     def __init__(self, sound):
+#         self.sound = sound
+    
+#     def run(self):
+#         self.sound.play()
 
 
 
